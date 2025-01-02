@@ -22,6 +22,9 @@ class TravelCard extends StatelessWidget {
         ),
         Positioned(
           bottom: getProportionateScreenHeight(0),
+          // top: getProportionateScreenHeight(0),
+          left: getProportionateScreenHeight(0),
+          right: getProportionateScreenHeight(0),
           child: Container(
             height: getProportionateScreenHeight(120),
             width: getProportionateScreenWidth(252),
