@@ -1,16 +1,71 @@
-# travel_app
+# [Travel Aoo](https://github.com/rahulrajdahal/travel_app_). Find places to travel around the world.
 
-A new Flutter project.
+Browse places to visit.
 
-## Getting Started
+- Search for places.
+- Your Recent visits.
+- Get all the details your dream travel.
 
-This project is a starting point for a Flutter application.
+## Preview
 
-A few resources to get you started if this is your first Flutter project:
+<a href="https://github.com/rahulrajdahal/travel_app">
+<img src="./screenshots/home.jpg?raw=true" width="300" height="620"/>
+</a>
+<img src="./screenshots/detail.jpg?raw=true" width="300" height="620"/>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![TravelMovie App](./screenshots/linux.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🏗 Development Guide
+
+### 1. clone the repository
+
+```sh
+git clone https://github.com/rahulrajdahal/travel_app.git
+```
+
+### 2. Install Dependencies
+
+#### npm
+
+```sh
+cd travel_app && flutter pub get
+```
+
+### 3. Connect to your API 💾
+
+Create a copy of **.env** file and update the key value pairs.
+
+### 4. Run in debug mode
+
+```sh
+flutter run --debug
+```
+
+#### OR
+
+### Run in Production
+
+```sh
+flutter run --release
+```
+
+## 🚀 Project Structure
+
+Inside of project [travel_app](https://github.com/rahulrajdahal/travel_app), you'll see the following folders and files:
+
+```text
+/
+├── screenshots/
+|   └── screenshot.jpg
+├── lib/
+|   ├── models/
+│   │   └── model.dart
+|   ├── pages/
+│   │   └── page.dart
+|   ├── widgets/
+│   │   └── widget.dart
+│   ├── main.dart
+│   └── services.dart
+├── .env.example
+└── pubspec.yaml
+```
