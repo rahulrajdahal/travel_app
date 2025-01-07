@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_app/api/map.dart';
+import 'package:travel_app/models/geocode.dart';
 
 class SearchBox extends StatefulWidget {
   const SearchBox({super.key});
@@ -9,19 +10,13 @@ class SearchBox extends StatefulWidget {
 }
 
 class _SearchBoxState extends State<SearchBox> {
-  late Future<dynamic> queryResults;
+  late Future<Geocode> queryResults;
 
   @override
   void initState() {
     super.initState();
-    queryResults = getPlace('Pat');
+    queryResults = getPlace('Patan');
   }
-
-  static const List<String> _kOptions = <String>[
-    'Kathmandu',
-    'Patan',
-    'Bhaktapur',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -31,31 +26,35 @@ class _SearchBoxState extends State<SearchBox> {
           controller: controller,
           leading: const Icon(Icons.search),
           hintText: "Search Destination...",
-          onTap: () {
-            controller.openView();
-          },
+          // onTap: () {
+          //   controller.openView();
+          // },
           onChanged: (query) {
             controller.openView();
-            controller.text = query;
+            print(query);
+            queryResults = getPlace(query);
           },
+
+          // onSubmitted: (query) {
+          //   // controller.closeView();
+          //   // queryResults = getPlace(query);
+          // },
         );
       },
       suggestionsBuilder: (context, controller) {
-        return List<ListTile>.generate(5, (index) {
-          return ListTile(
-            title: Text("item $index"),
-            onTap: () {
-              // handle selection
-              controller.text = "item$index";
-            },
-          );
+        return List.generate(5, (index) {
+          return FutureBuilder(
+              future: queryResults,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Text("Error Loading Suggestions.");
+                } else if (snapshot.hasData) {
+                  return Text(
+                      "${snapshot.data!.features![index].properties!.name}");
+                }
+                return const Center(child: CircularProgressIndicator());
+              });
         });
-        // return FutureBuilder(
-        //   future: queryResults,
-        //   builder: (context, snapshot) {
-        //     return Text("Result");
-        //   },
-        // );
       },
     );
   }
