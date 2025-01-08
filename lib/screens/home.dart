@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:travel_app/size_config.dart';
-import 'package:travel_app/widgets/popular_places.dart';
 import 'package:travel_app/widgets/recent_visits.dart';
 import 'package:travel_app/widgets/search_box.dart';
 
@@ -29,7 +28,7 @@ class HomeScreen extends StatelessWidget {
                       fontSize: getProportionateScreenWidth(24)),
                 ),
                 SizedBox(width: getProportionateScreenWidth(24)),
-                SearchBox(),
+                Expanded(child: SearchBox()),
                 SizedBox(width: getProportionateScreenWidth(24)),
                 Icon(Icons.menu),
               ],
@@ -41,7 +40,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             const RecentVisits(),
             SizedBox(height: getProportionateScreenHeight(40)),
-            const PopularPlaces(),
+            // const PopularPlaces(),
           ],
         )),
       ),
