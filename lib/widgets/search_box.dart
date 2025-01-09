@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_app/bloc/map_client.dart';
-import 'package:travel_app/bloc/map_search_bloc.dart';
-import 'package:travel_app/bloc/map_search_event.dart';
-import 'package:travel_app/bloc/map_search_state.dart';
-import 'package:travel_app/bloc/search.dart';
-import 'package:travel_app/cache/search_cache.dart';
-import 'package:travel_app/models/geocode_features.dart';
+import 'package:travel_app/bloc/mapbox_search.dart';
+import 'package:travel_app/bloc/mapbox_search_suggestions_bloc.dart';
+import 'package:travel_app/bloc/mapbox_search_suggestions_event.dart';
+import 'package:travel_app/bloc/mapbox_search_suggestions_state.dart';
+import 'package:travel_app/cache/mapbox_search_cache.dart';
+import 'package:travel_app/models/mapbox_search_suggestion.dart';
 
 class SearchBox extends StatelessWidget {
-  final search = Search(SearchCache(), MapClient());
+  // final search = Search(SearchCache(), MapClient());
+  final mapboxSearch = MapboxSearch(MapboxSearchCache(), MapClient());
 
   SearchBox({super.key});
 
@@ -28,7 +29,7 @@ class SearchBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => MapSearchBloc(search: search),
+      create: (_) => MapboxSearchSuggestionsBloc(mapboxSearch: mapboxSearch),
       child: Column(
         children: [
           Expanded(child: _SearchBar()),
@@ -46,12 +47,13 @@ class _SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<_SearchBar> {
   final _textController = TextEditingController();
-  late MapSearchBloc _mapSearchBloc;
+  // late MapSearchBloc _mapSearchBloc;
+  late MapboxSearchSuggestionsBloc _mapSearchSuggestionsBloc;
 
   @override
   void initState() {
     super.initState();
-    _mapSearchBloc = context.read<MapSearchBloc>();
+    _mapSearchSuggestionsBloc = context.read<MapboxSearchSuggestionsBloc>();
   }
 
   @override
@@ -66,7 +68,8 @@ class _SearchBarState extends State<_SearchBar> {
       controller: _textController,
       autocorrect: false,
       onChanged: (text) {
-        _mapSearchBloc.add(SearchChanged(text: text));
+        // _mapSearchBloc.add(SearchChanged(text: text));
+        _mapSearchSuggestionsBloc.add(MapboxSearchChanged(query: text));
       },
       decoration: InputDecoration(
         hintText: 'Search for places',
@@ -80,22 +83,27 @@ class _SearchBarState extends State<_SearchBar> {
 
   void _onClearTapped() {
     _textController.clear();
-    _mapSearchBloc.add(const SearchChanged(text: ''));
+    // _mapSearchBloc.add(const SearchChanged(text: ''));
+    _mapSearchSuggestionsBloc.add(const MapboxSearchChanged(query: ''));
   }
 }
 
 class _SearchBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MapSearchBloc, MapSearchState>(
+    // return BlocBuilder<MapSearchBloc, MapSearchState>(
+    return BlocBuilder<MapboxSearchSuggestionsBloc,
+        MapboxSearchSuggestionsState>(
       builder: (context, state) {
         return switch (state) {
-          MapSearchStateEmpty() => const Text('Please enter a term to begin'),
-          MapSearchStateLoading() => const CircularProgressIndicator.adaptive(),
-          MapSearchStateError() => Text(state.error),
-          MapSearchStateSuccess() => state.places.isEmpty
+          MapboxSearchSuggestionsStateEmpty() =>
+            const Text('Please enter a term to begin'),
+          MapboxSearchSuggestionsStateLoading() =>
+            const CircularProgressIndicator.adaptive(),
+          MapboxSearchSuggestionsStateError() => Text(state.error),
+          MapboxSearchSuggestionsStateSuccess() => state.suggestions.isEmpty
               ? const Text('No Results')
-              : Expanded(child: _SearchResults(items: state.places)),
+              : Expanded(child: _SearchResults(items: state.suggestions)),
         };
       },
     );
@@ -105,7 +113,8 @@ class _SearchBody extends StatelessWidget {
 class _SearchResults extends StatelessWidget {
   const _SearchResults({required this.items});
 
-  final List<GeocodeFeature> items;
+  // final List<GeocodeFeature> items;
+  final List<MapboxSearchSuggestion> items;
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +130,8 @@ class _SearchResults extends StatelessWidget {
 class _SearchResultItem extends StatelessWidget {
   const _SearchResultItem({required this.item});
 
-  final GeocodeFeature item;
+  // final GeocodeFeature item;
+  final MapboxSearchSuggestion item;
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +139,7 @@ class _SearchResultItem extends StatelessWidget {
       // leading: CircleAvatar(
       //   child: Image.network(item.owner.avatarUrl),
       // ),
-      title: Text(item.properties.name),
+      title: Text(item.name),
       // onTap: () => launchUrl(Uri.parse(item.htmlUrl)),
     );
   }
