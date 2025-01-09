@@ -6,7 +6,7 @@ class CustomAppBar {
   // @override
   Widget build(BuildContext context) {
     return AppBar(
-        leading: Text(
+        leading: const Text(
       "Custom",
       style: TextStyle(color: Colors.black),
     ));

@@ -14,6 +14,8 @@ class Search {
       return cacheResult;
     }
     final result = await client.searchPlace(query);
+    print(query);
+    print(result);
     cache.set(query, result);
     return result;
   }

@@ -11,6 +11,8 @@ import 'package:travel_app/models/geocode_features.dart';
 class SearchBox extends StatelessWidget {
   final search = Search(SearchCache(), MapClient());
 
+  SearchBox({super.key});
+
   // const SearchBox({required this.search, super.key});
 
   // final Search search;
@@ -29,7 +31,7 @@ class SearchBox extends StatelessWidget {
       create: (_) => MapSearchBloc(search: search),
       child: Column(
         children: [
-          _SearchBar(),
+          Expanded(child: _SearchBar()),
           _SearchBody(),
         ],
       ),
@@ -68,9 +70,9 @@ class _SearchBarState extends State<_SearchBar> {
       },
       decoration: InputDecoration(
         hintText: 'Search for places',
-        prefixIcon: Icon(Icons.search),
-        suffixIcon:
-            GestureDetector(onTap: _onClearTapped, child: Icon(Icons.clear)),
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: GestureDetector(
+            onTap: _onClearTapped, child: const Icon(Icons.clear)),
         border: InputBorder.none,
       ),
     );
@@ -78,7 +80,7 @@ class _SearchBarState extends State<_SearchBar> {
 
   void _onClearTapped() {
     _textController.clear();
-    _mapSearchBloc.add(SearchChanged(text: ''));
+    _mapSearchBloc.add(const SearchChanged(text: ''));
   }
 }
 
