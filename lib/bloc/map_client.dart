@@ -24,8 +24,6 @@ class MapClient {
     // "$baseUrl/search/searchbox/v1/suggest?q=$query&country=NP&access_token=$mapbox_access_token"));
 
     final results = json.decode(response.body) as Map<String, dynamic>;
-
-    print(response.body);
     if (response.statusCode == 200) {
       return SearchPlaces.fromJson(results);
     } else {
@@ -39,7 +37,6 @@ class MapClient {
 
     final results = json.decode(response.body) as Map<String, dynamic>;
 
-    print(response.body);
     if (response.statusCode == 200) {
       return MapboxSearchSuggestions.fromJson(results);
     } else {
