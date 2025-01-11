@@ -10,9 +10,9 @@ import 'package:travel_app/models/mapbox_search_suggestion.dart';
 import 'package:travel_app/size_config.dart';
 
 class SearchBox extends StatelessWidget {
-  final mapboxSearch = MapboxSearch(MapboxSearchCache(), MapClient());
-
   SearchBox({super.key});
+
+  final mapboxSearch = MapboxSearch(MapboxSearchCache(), MapClient());
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class SearchBox extends StatelessWidget {
         child: Column(
           children: [
             Expanded(child: _SearchBar()),
-            Expanded(child: _SearchBody()),
+            _SearchBody(),
           ],
         ),
       ),
