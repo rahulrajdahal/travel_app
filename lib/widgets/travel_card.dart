@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:travel_app/size_config.dart';
 
 class TravelCard extends StatelessWidget {
-  const TravelCard({super.key});
+  final bool isRecent;
+
+  const TravelCard({super.key, required this.isRecent});
 
   @override
   Widget build(BuildContext context) {
@@ -20,31 +22,57 @@ class TravelCard extends StatelessWidget {
             colorBlendMode: BlendMode.overlay,
           ),
         ),
+        if (isRecent)
+          Positioned(
+            top: getProportionateScreenHeight(8),
+            right: getProportionateScreenWidth(12),
+            child: Container(
+                decoration: BoxDecoration(
+                    color: (Colors.blue.shade200),
+                    border: Border.all(
+                        color: Colors.blue,
+                        width: getProportionateScreenWidth(2)),
+                    borderRadius:
+                        BorderRadius.circular(getProportionateScreenWidth(16))),
+                padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(8),
+                    vertical: getProportionateScreenHeight(4)),
+                child: Text(
+                  "Recently Visited",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: getProportionateScreenWidth(14),
+                      color: Colors.black),
+                )),
+          ),
         Positioned(
           bottom: getProportionateScreenHeight(0),
           left: getProportionateScreenHeight(0),
           right: getProportionateScreenHeight(0),
           child: Container(
-            height: getProportionateScreenHeight(120),
+            height: getProportionateScreenHeight(140),
             width: getProportionateScreenWidth(252),
             decoration: BoxDecoration(
                 color: Colors.black54, borderRadius: BorderRadius.circular(12)),
             child: Column(
               children: [
+                SizedBox(
+                  height: getProportionateScreenHeight(4),
+                ),
                 ListTile(
                   minVerticalPadding: getProportionateScreenHeight(2),
                   dense: true,
                   visualDensity: VisualDensity.compact,
                   leading: Icon(
                     Icons.place,
-                    size: getProportionateScreenWidth(20),
+                    size: getProportionateScreenWidth(32),
                     color: Colors.white60,
                   ),
                   title: Text("Kathmandu",
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
-                          fontSize: getProportionateScreenWidth(16))),
+                          fontSize: getProportionateScreenWidth(32))),
                 ),
                 ListTile(
                   minVerticalPadding: getProportionateScreenHeight(2),
