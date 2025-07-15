@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
         child: Scaffold(
             body: Column(
       children: [
+        // CustomAppBar(),
         SearchBox(),
         Expanded(
           child: Padding(

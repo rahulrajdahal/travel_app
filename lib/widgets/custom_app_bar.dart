@@ -1,32 +1,135 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_app/bloc/map_client.dart';
+import 'package:travel_app/bloc/mapbox_search.dart';
+import 'package:travel_app/bloc/mapbox_search_suggestions_bloc.dart';
+import 'package:travel_app/bloc/mapbox_search_suggestions_event.dart';
+import 'package:travel_app/bloc/mapbox_search_suggestions_state.dart';
+import 'package:travel_app/cache/mapbox_search_cache.dart';
+import 'package:travel_app/models/mapbox_search_suggestion.dart';
 import 'package:travel_app/size_config.dart';
-import 'package:travel_app/widgets/search_box.dart';
 
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
+  CustomAppBar({super.key});
+
+  final mapboxSearch = MapboxSearch(MapboxSearchCache(), MapClient());
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(24)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Travel",
-            style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: getProportionateScreenWidth(24)),
-          ),
-          SizedBox(width: getProportionateScreenWidth(24)),
-          Expanded(flex: 1, child: SearchBox()),
-          SizedBox(width: getProportionateScreenWidth(24)),
-          const Icon(Icons.menu)
-        ],
+    return BlocProvider(
+      create: (_) => MapboxSearchSuggestionsBloc(mapboxSearch: mapboxSearch),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            vertical: getProportionateScreenHeight(16),
+            horizontal: getProportionateScreenWidth(24)),
+        child: Column(
+          children: [
+            SearchBar(),
+            _SearchBody(),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class SearchBar extends StatefulWidget {
+  @override
+  State<SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<SearchBar> {
+  final _textController = TextEditingController();
+  late MapboxSearchSuggestionsBloc _mapboxSearchSuggestionsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapboxSearchSuggestionsBloc = context.read<MapboxSearchSuggestionsBloc>();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _textController,
+      autocorrect: false,
+      onChanged: (text) {
+        _mapboxSearchSuggestionsBloc.add(MapboxSearchChanged(query: text));
+      },
+      decoration: InputDecoration(
+          hintText: "Search for Places...",
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: GestureDetector(
+              onTap: _onClearTapped, child: const Icon(Icons.clear)),
+          border: OutlineInputBorder(
+            borderRadius:
+                BorderRadius.circular(getProportionateScreenWidth(12)),
+            borderSide: BorderSide(
+              color: Colors.blue,
+              width: getProportionateScreenWidth(2.0),
+            ),
+          )),
+    );
+  }
+
+  void _onClearTapped() {
+    _textController.clear();
+    _mapboxSearchSuggestionsBloc.add(MapboxSearchChanged(query: ''));
+  }
+}
+
+class _SearchBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<MapboxSearchSuggestionsBloc,
+        MapboxSearchSuggestionsState>(
+      builder: (context, state) {
+        return switch (state) {
+          MapboxSearchSuggestionsStateEmpty() =>
+            const Text('Please enter a term to begin'),
+          MapboxSearchSuggestionsStateLoading() =>
+            const CircularProgressIndicator.adaptive(),
+          MapboxSearchSuggestionsStateError() => Text(state.error),
+          MapboxSearchSuggestionsStateSuccess() => state.suggestions.isEmpty
+              ? const Text('No Results')
+              : Expanded(child: _SearchResults(items: state.suggestions)),
+        };
+      },
+    );
+  }
+}
+
+class _SearchResults extends StatelessWidget {
+  const _SearchResults({required this.items});
+
+  final List<MapboxSearchSuggestion> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (BuildContext context, int index) {
+        return _SearchResultItem(item: items[index]);
+      },
+    );
+  }
+}
+
+class _SearchResultItem extends StatelessWidget {
+  const _SearchResultItem({required this.item});
+
+  final MapboxSearchSuggestion item;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(item.name),
     );
   }
 }

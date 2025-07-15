@@ -18,27 +18,26 @@ class SearchBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => MapboxSearchSuggestionsBloc(mapboxSearch: mapboxSearch),
-      child: SizedBox(
-        height: getProportionateScreenHeight(60),
-        child: Column(
-          children: [
-            Expanded(child: _SearchBar()),
-            _SearchBody(),
-          ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: getProportionateScreenWidth(24),
+          vertical: getProportionateScreenHeight(16),
         ),
+        child: _Search(),
       ),
     );
   }
 }
 
-class _SearchBar extends StatefulWidget {
+class _Search extends StatefulWidget {
   @override
-  State<_SearchBar> createState() => _SearchBarState();
+  State<_Search> createState() => _SearchState();
 }
 
-class _SearchBarState extends State<_SearchBar> {
+class _SearchState extends State<_Search> {
   final _textController = TextEditingController();
   late MapboxSearchSuggestionsBloc _mapSearchSuggestionsBloc;
+  late bool showResults = false;
 
   @override
   void initState() {
@@ -54,19 +53,57 @@ class _SearchBarState extends State<_SearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _textController,
-      autocorrect: false,
-      onChanged: (text) {
-        _mapSearchSuggestionsBloc.add(MapboxSearchChanged(query: text));
-      },
-      decoration: InputDecoration(
-        hintText: 'Search for places',
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon: GestureDetector(
-            onTap: _onClearTapped, child: const Icon(Icons.clear)),
-        border: InputBorder.none,
-      ),
+    return Column(
+      children: [
+        Focus(
+          onFocusChange: (hasFocus) {
+            if (hasFocus) {
+              setState(() {
+                showResults = true;
+              });
+            } else {
+              setState(() {
+                showResults = false;
+              });
+            }
+          },
+          child: TextField(
+            controller: _textController,
+            autocorrect: false,
+            onChanged: (text) {
+              _mapSearchSuggestionsBloc.add(MapboxSearchChanged(query: text));
+            },
+            decoration: InputDecoration(
+              hintText: 'Search for places',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: GestureDetector(
+                  onTap: _onClearTapped, child: const Icon(Icons.clear)),
+              border: OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.circular(getProportionateScreenWidth(20)),
+                  borderSide: BorderSide(
+                    width: getProportionateScreenWidth(4),
+                    color: Colors.blue,
+                  )),
+            ),
+          ),
+        ),
+        if (showResults)
+          Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.only(top: getProportionateScreenHeight(12)),
+              padding: EdgeInsets.symmetric(
+                  horizontal: getProportionateScreenWidth(24),
+                  vertical: getProportionateScreenHeight(12)),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: Colors.blue,
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(getProportionateScreenWidth(8))),
+              child: _SearchBody()),
+      ],
     );
   }
 
@@ -86,11 +123,11 @@ class _SearchBody extends StatelessWidget {
           MapboxSearchSuggestionsStateEmpty() =>
             const Text('Please enter a term to begin'),
           MapboxSearchSuggestionsStateLoading() =>
-            const CircularProgressIndicator.adaptive(),
+            const Center(child: CircularProgressIndicator.adaptive()),
           MapboxSearchSuggestionsStateError() => Text(state.error),
           MapboxSearchSuggestionsStateSuccess() => state.suggestions.isEmpty
               ? const Text('No Results')
-              : Expanded(child: _SearchResults(items: state.suggestions)),
+              : _SearchResults(items: state.suggestions),
         };
       },
     );
@@ -104,11 +141,14 @@ class _SearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (BuildContext context, int index) {
-        return _SearchResultItem(item: items[index]);
-      },
+    return SizedBox(
+      height: 200,
+      child: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _SearchResultItem(item: items[index]);
+        },
+      ),
     );
   }
 }
@@ -121,7 +161,10 @@ class _SearchResultItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(item.name),
+      title: Text(
+        item.name,
+        style: const TextStyle(color: Colors.black),
+      ),
     );
   }
 }
