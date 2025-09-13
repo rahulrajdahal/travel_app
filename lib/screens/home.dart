@@ -23,15 +23,18 @@ class HomeScreen extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: getProportionateScreenWidth(24)),
-            child: ListView.separated(
-              itemBuilder: (context, index) {
+            child: GridView.count(
+              crossAxisCount: isDesktop(context)
+                  ? 3
+                  : isTablet(context)
+                      ? 2
+                      : 1,
+              mainAxisSpacing: getProportionateScreenHeight(38),
+              crossAxisSpacing: getProportionateScreenWidth(20),
+              children: List.generate(100, (index) {
                 return TravelCard(
                     isRecent: index == 0 || index == 1 ? true : false);
-              },
-              separatorBuilder: (context, index) {
-                return SizedBox(height: getProportionateScreenHeight(40));
-              },
-              itemCount: 10,
+              }),
             ),
           ),
         ),

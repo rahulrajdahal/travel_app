@@ -24,3 +24,16 @@ double getProportionateScreenWidth(double inputWidth) {
   final double screenWidth = SizeConfig.screenWidth;
   return (inputWidth / 375.0) * screenWidth;
 }
+
+bool isMobile(BuildContext context) {
+  return MediaQuery.of(context).size.width < 680;
+}
+
+bool isTablet(BuildContext context) {
+  return MediaQuery.of(context).size.width < 1024 &&
+      MediaQuery.of(context).size.width >= 680;
+}
+
+bool isDesktop(BuildContext context) {
+  return MediaQuery.of(context).size.width >= 1024;
+}

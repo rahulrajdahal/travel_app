@@ -26,7 +26,9 @@ class PopularPlaces extends StatelessWidget {
                 mainAxisSpacing: getProportionateScreenHeight(38),
                 crossAxisSpacing: getProportionateScreenWidth(20),
                 children: List.generate(100, (index) {
-                  return const TravelCard();
+                  return TravelCard(
+                    isRecent: (index == 0 || index == 1) ? true : false,
+                  );
                 })),
           ),
         )
